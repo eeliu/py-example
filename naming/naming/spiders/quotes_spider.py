@@ -13,27 +13,14 @@ from scrapy.utils.log import configure_logging
 # logger = logging.getLogger('naming')
 
 class QuotesSpider(scrapy.Spider):
-    # name = "quotes"
 
-    # def start_requests(self):
-    #     urls = [
-    #         'http://quotes.toscrape.com/page/1/',
-    #         'http://quotes.toscrape.com/page/2/',
-    #     ]
-    #     for url in urls:
-    #         yield scrapy.Request(url=url, callback=self.parse)
-
-    # def parse(self, response):
-    #     page = response.url.split("/")[-2]
-    #     filename = 'quotes-%s.html' % page
-    #     with open(filename, 'wb') as f:
-    #         f.write(response.body)
-    #     self.log('Saved file %s' % filename)
+    def __init__(self,*a, **kw):
+        super().__init__(*a, **kw)
+        self.data =[]
 
     configure_logging(install_root_handler=False)
     logging.basicConfig(
         filename='log.txt',
-        # format='%(levelname)s: %(message)s',
         format='[%(asctime)s] [%(levelname)s] %(message)s',
         level=logging.DEBUG
     )
@@ -42,19 +29,33 @@ class QuotesSpider(scrapy.Spider):
 
     name = "quotes"
     start_urls = [
-        # 'http://quotes.toscrape.com/page/1/',
         'http://xh.5156edu.com/bh/b28h44s8.html',
-        # 'http://xh.5156edu.com/bh/b28h44s8_2.html',
-        # 'http://xh.5156edu.com/bh/b28h44s8_3.html',
-        # 'http://xh.5156edu.com/bh/b84h28s18.html'
-        # 'http://xh.5156edu.com/html3/1952.html'
+        'http://xh.5156edu.com/bh/b28h44s8_2.html',
+        'http://xh.5156edu.com/bh/b28h44s8_3.html',
+        'http://xh.5156edu.com/bh/b13h22s13.html',
+        'http://xh.5156edu.com/bh/b13h22s13_2.html',
+        'http://xh.5156edu.com/bh/b13h22s13_3.html'
     ]
 
+    class Hanzi(object):
+        def __init__(self,char,pinyin,strokes):
+            self.char = char
+            self.pinyin = pinyin
+            self.strokes = strokes
+
+
+
+
     def getAll(self,response):
+
         char = response.xpath("//td[@class='font_22']/text()").get()
-        pinyin = response.xpath("//td[@class='font_14']/script/text()").get().split("\"")[1]
+
+        pinyin = response.xpath("//tr[td[b[text()=\"笔划：\"]]]/td[2]/script/text()").get().split("\"")[1]
+
         Strokes = response.xpath("//tr[td[b[text()=\"笔划：\"]]]/td[4]/text()").get()
-        QuotesSpider.logger.info("char %s pinyin %s Strokes:%d",char,pinyin,int(Strokes))
+        self.data.append(QuotesSpider.Hanzi(char,pinyin,Strokes))
+
+
 
 
     def parse(self, response):
@@ -65,11 +66,16 @@ class QuotesSpider(scrapy.Spider):
         # print(strokes)
         # print(response.xpath(''))
         # for quote in response.css('div.table'):
+
         for a in response.xpath('//div[1]//a[@class]'):
             next_page = a.xpath('@href').get()
             yield response.follow(next_page, callback=self.getAll)
 
-        
+    def closed(self,reson):
+        with open('naming.txt','w+') as fd:
+            for candidata in self.data:
+                data = ("%s-%s-%s\n")%(candidata.char,candidata.pinyin,candidata.strokes)
+                fd.write(data)
 
 
         # for quote in response.css('div.quote'):
