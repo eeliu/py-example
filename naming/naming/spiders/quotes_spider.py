@@ -72,7 +72,7 @@ class QuotesSpider(scrapy.Spider):
             yield response.follow(next_page, callback=self.getAll)
 
     def closed(self,reson):
-        with open('naming.txt','w+') as fd:
+        with open('naming.txt','w+',encoding='utf-8') as fd:
             for candidata in self.data:
                 data = ("%s-%s-%s\n")%(candidata.char,candidata.pinyin,candidata.strokes)
                 fd.write(data)
