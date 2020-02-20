@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-name_path = 'D:/apps/py-example/naming/naming.txt'
+name_path = '/home/test/PycharmProjects/testScrapy/naming/naming.txt'
 
 class Hanzi(object):
     # 甽-zhen4-8
@@ -31,7 +31,7 @@ class Rule(object):
             return False
         if self.black_tones(hanzi.tones):
             return False
-        if self.get_stroke() != hanzi.strokes:
+        if hanzi.strokes in self.get_stroke():
             return False
 
         return True
@@ -56,7 +56,7 @@ class Rule(object):
 
 class MidRule(Rule):
     def get_stroke(self):
-        return 8
+        return [8,18]
 
     def black_tones(self, t):
         if t < 3:
@@ -68,7 +68,7 @@ class MidRule(Rule):
 
 class LastRule(Rule):
     def get_stroke(self):
-        return 13
+        return [3,13,13]
 
     def black_tones(self, t):
         if t >= 3:
