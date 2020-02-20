@@ -6,14 +6,14 @@ class Hanzi(object):
     # 甽-zhen4-8
     def __init__(self,format):
         self.char,pinyin,strokes=format.split('-')
-        self.strokes = int(strokes[0])
+        self.strokes = int(strokes[0:-1])
         self.initial = pinyin[0]
         self.pinyin= pinyin[0:-1]
         self.final = pinyin[1:-1]
         self.tones = int(pinyin[-1])
 
     def __str__(self):
-        return ("%s %s \n"%(self.char,self.pinyin))
+        return ("%s %s %d\n"%(self.char,self.pinyin,self.strokes))
 
 
 class Rule(object):
@@ -31,7 +31,7 @@ class Rule(object):
             return False
         if self.black_tones(hanzi.tones):
             return False
-        if hanzi.strokes in self.get_stroke():
+        if hanzi.strokes not in self.get_stroke():
             return False
 
         return True
@@ -68,7 +68,7 @@ class MidRule(Rule):
 
 class LastRule(Rule):
     def get_stroke(self):
-        return [3,13,13]
+        return [3,13,23]
 
     def black_tones(self, t):
         if t >= 3:
@@ -99,6 +99,7 @@ class Filter(object):
                 elif self.last_rule.check(hanzi):
                     self.last_set.append(hanzi)
                 else:
+                    # print(hanzi)
                     pass
 
         self.mid_rule.flushToFile(self.mid_set)

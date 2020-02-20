@@ -39,7 +39,6 @@ class QuotesSpider(scrapy.Spider):
         'http://xh.5156edu.com/bh/b67h69s23.html',
         'http://xh.5156edu.com/bh/b84h28s18.html',
         'http://xh.5156edu.com/bh/b84h28s18_2.html'
-        
     ]
 
     class Hanzi(object):
